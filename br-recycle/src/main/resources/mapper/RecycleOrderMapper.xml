@@ -1,0 +1,120 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.br.recycle.mapper.RecycleOrderMapper">
+    
+    <resultMap id="BaseResultMap" type="com.br.recycle.entity.RecycleOrder">
+        <id column="id" property="id"/>
+        <result column="order_number" property="orderNumber"/>
+        <result column="user_id" property="userId"/>
+        <result column="total_count" property="totalCount"/>
+        <result column="total_points" property="totalPoints"/>
+        <result column="recycle_address" property="recycleAddress"/>
+        <result column="contact_phone" property="contactPhone"/>
+        <result column="order_status" property="orderStatus"/>
+        <result column="remark" property="remark"/>
+        <result column="detail_json" property="detailJson"/>
+        <result column="create_time" property="createTime"/>
+        <result column="update_time" property="updateTime"/>
+    </resultMap>
+    
+    <select id="getById" resultMap="BaseResultMap">
+        SELECT * FROM recycle_order WHERE id = #{id}
+    </select>
+    
+    <select id="getByOrderNumber" resultMap="BaseResultMap">
+        SELECT * FROM recycle_order WHERE order_number = #{orderNumber}
+    </select>
+    
+    <select id="listAll" resultMap="BaseResultMap">
+        SELECT * FROM recycle_order ORDER BY create_time DESC
+    </select>
+    
+    <select id="listByUserId" resultMap="BaseResultMap">
+        SELECT * FROM recycle_order WHERE user_id = #{userId} ORDER BY create_time DESC
+    </select>
+    
+    <select id="listByPage" resultMap="BaseResultMap">
+        SELECT * FROM recycle_order ORDER BY create_time DESC LIMIT #{offset}, #{limit}
+    </select>
+    
+    <select id="count" resultType="java.lang.Integer">
+        SELECT COUNT(*) FROM recycle_order
+    </select>
+    
+    <!-- 按条件搜索订单 -->
+    <select id="searchOrders" resultMap="BaseResultMap">
+        SELECT * FROM recycle_order
+        <where>
+            <if test="address != null and address != ''">
+                AND recycle_address LIKE CONCAT('%', #{address}, '%')
+            </if>
+            <if test="startDate != null and startDate != ''">
+                AND DATE(create_time) &gt;= #{startDate}
+            </if>
+            <if test="endDate != null and endDate != ''">
+                AND DATE(create_time) &lt;= #{endDate}
+            </if>
+            <if test="orderStatus != null">
+                AND order_status = #{orderStatus}
+            </if>
+            <if test="userId != null">
+                AND user_id = #{userId}
+            </if>
+        </where>
+        ORDER BY create_time DESC
+        LIMIT #{offset}, #{limit}
+    </select>
+    
+    <select id="countBySearch" resultType="java.lang.Integer">
+        SELECT COUNT(*) FROM recycle_order
+        <where>
+            <if test="address != null and address != ''">
+                AND recycle_address LIKE CONCAT('%', #{address}, '%')
+            </if>
+            <if test="startDate != null and startDate != ''">
+                AND DATE(create_time) &gt;= #{startDate}
+            </if>
+            <if test="endDate != null and endDate != ''">
+                AND DATE(create_time) &lt;= #{endDate}
+            </if>
+            <if test="orderStatus != null">
+                AND order_status = #{orderStatus}
+            </if>
+            <if test="userId != null">
+                AND user_id = #{userId}
+            </if>
+        </where>
+    </select>
+
+    <select id="countUserOrdersByDate" resultType="java.lang.Integer">
+        SELECT COUNT(*)
+        FROM recycle_order
+        WHERE user_id = #{userId}
+          AND DATE(create_time) = #{orderDate}
+    </select>
+    
+    <insert id="insert" useGeneratedKeys="true" keyProperty="id">
+        INSERT INTO recycle_order (order_number, user_id, total_count, total_points, recycle_address, contact_phone, order_status, remark, detail_json)
+        VALUES (#{orderNumber}, #{userId}, #{totalCount}, #{totalPoints}, #{recycleAddress}, #{contactPhone}, #{orderStatus}, #{remark}, #{detailJson})
+    </insert>
+    
+    <update id="update">
+        UPDATE recycle_order
+        <set>
+            <if test="totalCount != null">total_count = #{totalCount},</if>
+            <if test="totalPoints != null">total_points = #{totalPoints},</if>
+            <if test="recycleAddress != null">recycle_address = #{recycleAddress},</if>
+            <if test="contactPhone != null">contact_phone = #{contactPhone},</if>
+            <if test="orderStatus != null">order_status = #{orderStatus},</if>
+            <if test="remark != null">remark = #{remark},</if>
+            <if test="detailJson != null">detail_json = #{detailJson},</if>
+        </set>
+        WHERE id = #{id}
+    </update>
+    
+    <delete id="deleteById">
+        DELETE FROM recycle_order WHERE id = #{id}
+    </delete>
+    
+</mapper>
+

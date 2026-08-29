@@ -1,0 +1,56 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.br.recycle.mapper.BatteryTypeMapper">
+    
+    <resultMap id="BaseResultMap" type="com.br.recycle.entity.BatteryType">
+        <id column="id" property="id"/>
+        <result column="type_name" property="typeName"/>
+        <result column="description" property="description"/>
+        <result column="icon" property="icon"/>
+        <result column="identification_guide" property="identificationGuide"/>
+        <result column="points" property="points"/>
+        <result column="status" property="status"/>
+        <result column="create_time" property="createTime"/>
+        <result column="update_time" property="updateTime"/>
+    </resultMap>
+    
+    <select id="getById" resultMap="BaseResultMap">
+        SELECT * FROM battery_type WHERE id = #{id}
+    </select>
+    
+    <select id="getByTypeName" resultMap="BaseResultMap">
+        SELECT * FROM battery_type WHERE type_name = #{typeName}
+    </select>
+    
+    <select id="listAll" resultMap="BaseResultMap">
+        SELECT * FROM battery_type ORDER BY id
+    </select>
+    
+    <select id="listEnabled" resultMap="BaseResultMap">
+        SELECT * FROM battery_type WHERE status = 1 ORDER BY id
+    </select>
+    
+    <insert id="insert" useGeneratedKeys="true" keyProperty="id">
+        INSERT INTO battery_type (type_name, description, icon, identification_guide, points, status)
+        VALUES (#{typeName}, #{description}, #{icon}, #{identificationGuide}, #{points}, #{status})
+    </insert>
+    
+    <update id="update">
+        UPDATE battery_type
+        <set>
+            <if test="typeName != null">type_name = #{typeName},</if>
+            <if test="description != null">description = #{description},</if>
+            <if test="icon != null">icon = #{icon},</if>
+            <if test="identificationGuide != null">identification_guide = #{identificationGuide},</if>
+            <if test="points != null">points = #{points},</if>
+            <if test="status != null">status = #{status},</if>
+        </set>
+        WHERE id = #{id}
+    </update>
+    
+    <delete id="deleteById">
+        DELETE FROM battery_type WHERE id = #{id}
+    </delete>
+    
+</mapper>
+

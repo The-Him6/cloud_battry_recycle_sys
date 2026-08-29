@@ -1,0 +1,19 @@
+server:
+  port: 8083
+br:
+  db:
+    database: br_recycle
+# MyBatis
+mybatis:
+  type-aliases-package: com.br.recycle.entity
+# Sentinel
+spring:
+  cloud:
+    sentinel:
+      transport:
+        dashboard: localhost:8090
+      http-method-specify: true # 是否设置请求方式作为资源名称
+
+feign:
+  sentinel:
+    enabled: true

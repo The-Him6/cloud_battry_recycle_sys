@@ -1,0 +1,64 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.br.seckill.mapper.SeckillActivityMapper">
+
+    <resultMap id="BaseResultMap" type="com.br.seckill.entity.SeckillActivity">
+        <id column="id" property="id"/>
+        <result column="title" property="title"/>
+        <result column="description" property="description"/>
+        <result column="stock" property="stock"/>
+        <result column="sold" property="sold"/>
+        <result column="points_cost" property="pointsCost"/>
+        <result column="start_time" property="startTime"/>
+        <result column="end_time" property="endTime"/>
+        <result column="coupon_start_time" property="couponStartTime"/>
+        <result column="coupon_end_time" property="couponEndTime"/>
+        <result column="status" property="status"/>
+        <result column="create_admin_id" property="createAdminId"/>
+        <result column="create_time" property="createTime"/>
+        <result column="update_time" property="updateTime"/>
+    </resultMap>
+
+    <select id="getById" resultMap="BaseResultMap">
+        SELECT * FROM seckill_activity WHERE id = #{id}
+    </select>
+
+    <select id="listAll" resultMap="BaseResultMap">
+        SELECT * FROM seckill_activity ORDER BY create_time DESC
+    </select>
+
+    <select id="listOnline" resultMap="BaseResultMap">
+        SELECT * FROM seckill_activity WHERE status = 1 ORDER BY start_time DESC
+    </select>
+
+    <insert id="insert" useGeneratedKeys="true" keyProperty="id">
+        INSERT INTO seckill_activity (title, description, stock, sold, points_cost, start_time, end_time,
+                                      coupon_start_time, coupon_end_time, status, create_admin_id)
+        VALUES (#{title}, #{description}, #{stock}, #{sold}, #{pointsCost}, #{startTime}, #{endTime},
+                #{couponStartTime}, #{couponEndTime}, #{status}, #{createAdminId})
+    </insert>
+
+    <update id="update">
+        UPDATE seckill_activity
+        <set>
+            <if test="title != null">title = #{title},</if>
+            <if test="description != null">description = #{description},</if>
+            <if test="stock != null">stock = #{stock},</if>
+            <if test="sold != null">sold = #{sold},</if>
+            <if test="pointsCost != null">points_cost = #{pointsCost},</if>
+            <if test="startTime != null">start_time = #{startTime},</if>
+            <if test="endTime != null">end_time = #{endTime},</if>
+            <if test="couponStartTime != null">coupon_start_time = #{couponStartTime},</if>
+            <if test="couponEndTime != null">coupon_end_time = #{couponEndTime},</if>
+            <if test="status != null">status = #{status},</if>
+            <if test="createAdminId != null">create_admin_id = #{createAdminId},</if>
+        </set>
+        WHERE id = #{id}
+    </update>
+
+    <update id="increaseSold">
+        UPDATE seckill_activity
+        SET sold = sold + 1
+        WHERE id = #{id} AND sold &lt; stock
+    </update>
+</mapper>

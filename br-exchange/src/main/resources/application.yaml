@@ -1,0 +1,12 @@
+server:
+  port: 8084
+br:
+  db:
+    database: br_exchange
+# MyBatis
+mybatis:
+  type-aliases-package: com.br.exchange.entity
+
+feign:
+  sentinel:
+    enabled: true

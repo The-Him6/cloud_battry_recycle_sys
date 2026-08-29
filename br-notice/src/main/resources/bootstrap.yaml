@@ -1,0 +1,18 @@
+spring:
+  application:
+    name: br-notice
+  cloud:
+    nacos:
+      server-addr: 192.168.150.102:8850
+      username: nacos
+      password: nacos
+      discovery:
+        username: nacos
+        password: nacos
+      config:
+        file-extension: yaml
+        shared-configs:
+          - data-id: shared-jdbc.yaml
+          - data-id: shared-common.yaml
+          - data-id: shared-log.yaml
+          - data-id: shared-swagger.yaml

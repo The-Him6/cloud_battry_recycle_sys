@@ -1,0 +1,42 @@
+server:
+  port: 8085
+  tomcat:
+    threads:
+      max: 50
+    accept-count: 50 # 允许等待的线程
+    max-connections: 100 # 最大连接数
+br:
+  db:
+    database: br_seckill
+spring:
+  # Sentinel
+  cloud:
+    sentinel:
+      transport:
+        dashboard: localhost:8090
+      http-method-specify: true # 是否设置请求方式作为资源名称
+
+  # RabbitMQ配置：用于秒杀成功后的异步发券
+  rabbitmq:
+    host: ${RABBITMQ_HOST:192.168.150.102}
+    port: ${RABBITMQ_PORT:5672}
+    username: ${RABBITMQ_USERNAME:thehim}
+    password: ${RABBITMQ_PASSWORD:123}
+    virtual-host: ${RABBITMQ_VIRTUAL_HOST:/thehim}
+    publisher-confirm-type: correlated
+    publisher-returns: true
+    template:
+      mandatory: true
+    listener:
+      simple:
+        acknowledge-mode: manual
+        prefetch: 1
+        concurrency: 1
+        max-concurrency: 4
+feign:
+  sentinel:
+    enabled: true
+# MyBatis
+mybatis:
+  type-aliases-package: com.br.seckill.entity
+

@@ -1,0 +1,91 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.br.points.mapper.UserPointsMapper">
+    
+    <resultMap id="BaseResultMap" type="com.br.points.entity.UserPoints">
+        <id column="id" property="id"/>
+        <result column="user_id" property="userId"/>
+        <result column="total_points" property="totalPoints"/>
+        <result column="available_points" property="availablePoints"/>
+        <result column="used_points" property="usedPoints"/>
+        <result column="create_time" property="createTime"/>
+        <result column="update_time" property="updateTime"/>
+    </resultMap>
+    
+    <select id="getByUserId" resultMap="BaseResultMap">
+        SELECT * FROM user_points WHERE user_id = #{userId}
+    </select>
+    
+    <insert id="insert" useGeneratedKeys="true" keyProperty="id">
+        INSERT INTO user_points (user_id, total_points, available_points, used_points)
+        VALUES (#{userId}, #{totalPoints}, #{availablePoints}, #{usedPoints})
+    </insert>
+    
+    <update id="update">
+        UPDATE user_points
+        SET total_points = #{totalPoints},
+            available_points = #{availablePoints},
+            used_points = #{usedPoints}
+        WHERE user_id = #{userId}
+    </update>
+    
+    <update id="addPoints">
+        UPDATE user_points
+        SET total_points = total_points + #{points},
+            available_points = available_points + #{points}
+        WHERE user_id = #{userId}
+    </update>
+    
+    <update id="deductPoints">
+        UPDATE user_points
+        SET available_points = available_points - #{points},
+            used_points = used_points + #{points}
+        WHERE user_id = #{userId} AND available_points >= #{points}
+    </update>
+    
+</mapper>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

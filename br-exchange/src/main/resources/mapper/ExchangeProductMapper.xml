@@ -1,0 +1,108 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.br.exchange.mapper.ExchangeProductMapper">
+    
+    <resultMap id="BaseResultMap" type="com.br.exchange.entity.ExchangeProduct">
+        <id column="id" property="id"/>
+        <result column="product_name" property="productName"/>
+        <result column="brand" property="brand"/>
+        <result column="battery_model" property="batteryModel"/>
+        <result column="points_required" property="pointsRequired"/>
+        <result column="stock" property="stock"/>
+        <result column="image_url" property="imageUrl"/>
+        <result column="description" property="description"/>
+        <result column="status" property="status"/>
+        <result column="create_time" property="createTime"/>
+        <result column="update_time" property="updateTime"/>
+    </resultMap>
+    
+    <select id="getById" resultMap="BaseResultMap">
+        SELECT * FROM exchange_product WHERE id = #{id}
+    </select>
+    
+    <select id="listAll" resultMap="BaseResultMap">
+        SELECT * FROM exchange_product ORDER BY brand, battery_model
+    </select>
+    
+    <select id="listAvailable" resultMap="BaseResultMap">
+        SELECT * FROM exchange_product WHERE status = 1 AND stock > 0 ORDER BY brand, battery_model
+    </select>
+    
+    <select id="listByBrand" resultMap="BaseResultMap">
+        SELECT * FROM exchange_product WHERE brand = #{brand} ORDER BY battery_model
+    </select>
+    
+    <insert id="insert" useGeneratedKeys="true" keyProperty="id">
+        INSERT INTO exchange_product (product_name, brand, battery_model, points_required, stock, image_url, description, status)
+        VALUES (#{productName}, #{brand}, #{batteryModel}, #{pointsRequired}, #{stock}, #{imageUrl}, #{description}, #{status})
+    </insert>
+    
+    <update id="update">
+        UPDATE exchange_product
+        <set>
+            <if test="productName != null">product_name = #{productName},</if>
+            <if test="brand != null">brand = #{brand},</if>
+            <if test="batteryModel != null">battery_model = #{batteryModel},</if>
+            <if test="pointsRequired != null">points_required = #{pointsRequired},</if>
+            <if test="stock != null">stock = #{stock},</if>
+            <if test="imageUrl != null">image_url = #{imageUrl},</if>
+            <if test="description != null">description = #{description},</if>
+            <if test="status != null">status = #{status},</if>
+        </set>
+        WHERE id = #{id}
+    </update>
+    
+    <delete id="deleteById">
+        DELETE FROM exchange_product WHERE id = #{id}
+    </delete>
+    
+    <update id="updateStock">
+        UPDATE exchange_product SET stock = stock - #{quantity} WHERE id = #{id} AND stock >= #{quantity}
+    </update>
+    
+</mapper>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

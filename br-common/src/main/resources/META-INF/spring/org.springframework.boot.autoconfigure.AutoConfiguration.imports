@@ -1,0 +1,4 @@
+com.br.common.config.MvcConfig
+com.br.common.config.FileUploadAutoConfiguration
+com.br.common.advice.CommonExceptionAdvice
+com.br.common.config.CacheAutoConfiguration

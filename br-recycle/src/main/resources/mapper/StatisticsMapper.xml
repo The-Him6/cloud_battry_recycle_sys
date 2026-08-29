@@ -1,0 +1,99 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.br.recycle.mapper.StatisticsMapper">
+
+    <!-- 查询管理员首页概览数字，只返回卡片展示需要的聚合结果 -->
+    <select id="selectDashboardOverview" resultType="com.br.recycle.vo.DashboardOverviewVO">
+        SELECT
+        (SELECT COUNT(*) FROM recycle_order) AS orderCount,
+        (SELECT SUM(battery_count) FROM recycle_detail) AS batteryCount,
+        (SELECT SUM(battery_count) FROM recycle_detail
+        WHERE create_time >= CURDATE() AND create_time &lt; CURDATE() + INTERVAL 1 DAY) AS todayCount
+    </select>
+    
+    <!-- 统计每种电池的回收数量 -->
+    <select id="countByBatteryType" resultType="java.util.HashMap">
+        SELECT
+            bt.id AS batteryTypeId,
+            bt.type_name AS batteryTypeName,
+            COALESCE(SUM(rd.battery_count), 0) AS totalCount
+        FROM battery_type bt
+        LEFT JOIN recycle_detail rd ON bt.id = rd.battery_type_id
+        GROUP BY bt.id, bt.type_name
+    </select>
+    
+    <!-- 统计每日回收数量（最近N天） -->
+    <select id="countByDate" resultType="java.util.HashMap">
+        SELECT 
+            DATE(ro.create_time) AS date,
+            COUNT(ro.id) AS orderCount,
+            COALESCE(SUM(ro.total_count), 0) AS totalCount
+        FROM recycle_order ro
+        WHERE ro.create_time >= DATE_SUB(CURDATE(), INTERVAL #{days} DAY)
+          AND ro.order_status = 2
+        GROUP BY DATE(ro.create_time)
+        ORDER BY date ASC
+    </select>
+    
+    <!-- 按月统计回收数量（近12个月） -->
+    <select id="countByMonth" resultType="java.util.HashMap">
+        SELECT 
+            YEAR(ro.create_time) AS year,
+            MONTH(ro.create_time) AS month,
+            COUNT(ro.id) AS orderCount,
+            COALESCE(SUM(ro.total_count), 0) AS totalCount
+        FROM recycle_order ro
+        WHERE ro.create_time >= DATE_SUB(CURDATE(), INTERVAL 12 MONTH)
+          AND ro.order_status = 2
+        GROUP BY YEAR(ro.create_time), MONTH(ro.create_time)
+        ORDER BY year ASC, month ASC
+    </select>
+    
+    <!-- 按年统计回收数量（全部年份） -->
+    <select id="countByYear" resultType="java.util.HashMap">
+        SELECT 
+            YEAR(ro.create_time) AS year,
+            COUNT(ro.id) AS orderCount,
+            COALESCE(SUM(ro.total_count), 0) AS totalCount
+        FROM recycle_order ro
+        WHERE ro.order_status = 2
+        GROUP BY YEAR(ro.create_time)
+        ORDER BY year ASC
+    </select>
+    
+    <!-- 统计订单状态分布 -->
+    <select id="countByOrderStatus" resultType="java.util.HashMap">
+        SELECT 
+            order_status AS orderStatus,
+            COUNT(*) AS count
+        FROM recycle_order
+        GROUP BY order_status
+    </select>
+    
+    <!-- 统计地区回收排行（按市，按回收数量降序） -->
+    <select id="countByCity" resultType="java.util.HashMap">
+        SELECT
+            cityName,
+            COUNT(*) AS orderCount,
+            COALESCE(SUM(total_count), 0) AS totalCount,
+            COALESCE(SUM(total_points), 0) AS totalPoints
+        FROM (
+            SELECT
+                CASE
+                    WHEN recycle_address LIKE '%省%市%' THEN SUBSTRING_INDEX(SUBSTRING_INDEX(recycle_address, '省', -1), '市', 1)
+                    WHEN recycle_address LIKE '%市%' THEN SUBSTRING_INDEX(recycle_address, '市', 1)
+                    ELSE recycle_address
+                END AS cityName,
+                total_count,
+                total_points
+            FROM recycle_order
+            WHERE order_status = 2
+              AND recycle_address IS NOT NULL
+              AND recycle_address != ''
+        ) city_stat
+        GROUP BY cityName
+        ORDER BY totalCount DESC, orderCount DESC, cityName ASC
+        LIMIT #{limit}
+    </select>
+    
+</mapper>

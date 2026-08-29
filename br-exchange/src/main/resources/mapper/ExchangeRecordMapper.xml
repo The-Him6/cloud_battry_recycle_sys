@@ -1,0 +1,107 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.br.exchange.mapper.ExchangeRecordMapper">
+    
+    <resultMap id="BaseResultMap" type="com.br.exchange.entity.ExchangeRecord">
+        <id column="id" property="id"/>
+        <result column="user_id" property="userId"/>
+        <result column="product_id" property="productId"/>
+        <result column="product_name" property="productName"/>
+        <result column="points_used" property="pointsUsed"/>
+        <result column="quantity" property="quantity"/>
+        <result column="exchange_status" property="exchangeStatus"/>
+        <result column="shipping_address" property="shippingAddress"/>
+        <result column="contact_phone" property="contactPhone"/>
+        <result column="remark" property="remark"/>
+        <result column="exchange_type" property="exchangeType"/>
+        <result column="coupon_id" property="couponId"/>
+        <result column="create_time" property="createTime"/>
+        <result column="update_time" property="updateTime"/>
+    </resultMap>
+    
+    <select id="getById" resultMap="BaseResultMap">
+        SELECT * FROM exchange_record WHERE id = #{id}
+    </select>
+    
+    <select id="listAll" resultMap="BaseResultMap">
+        SELECT * FROM exchange_record ORDER BY create_time DESC
+    </select>
+    
+    <select id="listByUserId" resultMap="BaseResultMap">
+        SELECT * FROM exchange_record WHERE user_id = #{userId} ORDER BY create_time DESC
+    </select>
+    
+    <select id="listByPage" resultMap="BaseResultMap">
+        SELECT * FROM exchange_record ORDER BY create_time DESC LIMIT #{offset}, #{limit}
+    </select>
+    
+    <select id="count" resultType="java.lang.Integer">
+        SELECT COUNT(*) FROM exchange_record
+    </select>
+    
+    <insert id="insert" useGeneratedKeys="true" keyProperty="id">
+        INSERT INTO exchange_record (user_id, product_id, product_name, points_used, quantity, exchange_status,
+                                     shipping_address, contact_phone, remark, exchange_type, coupon_id)
+        VALUES (#{userId}, #{productId}, #{productName}, #{pointsUsed}, #{quantity}, #{exchangeStatus},
+                #{shippingAddress}, #{contactPhone}, #{remark}, #{exchangeType}, #{couponId})
+    </insert>
+    
+    <update id="update">
+        UPDATE exchange_record
+        <set>
+            <if test="exchangeStatus != null">exchange_status = #{exchangeStatus},</if>
+            <if test="shippingAddress != null">shipping_address = #{shippingAddress},</if>
+            <if test="contactPhone != null">contact_phone = #{contactPhone},</if>
+            <if test="remark != null">remark = #{remark},</if>
+            <if test="exchangeType != null">exchange_type = #{exchangeType},</if>
+            <if test="couponId != null">coupon_id = #{couponId},</if>
+        </set>
+        WHERE id = #{id}
+    </update>
+    
+</mapper>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

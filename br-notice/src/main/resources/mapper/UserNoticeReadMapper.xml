@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.br.notice.mapper.UserNoticeReadMapper">
+
+    <resultMap id="BaseResultMap" type="com.br.notice.entity.UserNoticeRead">
+        <id column="id" property="id"/>
+        <result column="notice_id" property="noticeId"/>
+        <result column="user_id" property="userId"/>
+        <result column="read_time" property="readTime"/>
+    </resultMap>
+
+    <select id="getByNoticeAndUser" resultMap="BaseResultMap">
+        SELECT * FROM user_notice_read WHERE notice_id = #{noticeId} AND user_id = #{userId}
+    </select>
+
+    <insert id="insert" useGeneratedKeys="true" keyProperty="id">
+        INSERT IGNORE INTO user_notice_read (notice_id, user_id, read_time)
+        VALUES (#{noticeId}, #{userId}, NOW())
+    </insert>
+</mapper>

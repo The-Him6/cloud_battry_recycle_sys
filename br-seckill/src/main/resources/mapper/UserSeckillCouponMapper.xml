@@ -1,0 +1,71 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.br.seckill.mapper.UserSeckillCouponMapper">
+
+    <resultMap id="BaseResultMap" type="com.br.seckill.entity.UserSeckillCoupon">
+        <id column="id" property="id"/>
+        <result column="activity_id" property="activityId"/>
+        <result column="user_id" property="userId"/>
+        <result column="status" property="status"/>
+        <result column="effective_time" property="effectiveTime"/>
+        <result column="expire_time" property="expireTime"/>
+        <result column="used_product_id" property="usedProductId"/>
+        <result column="used_exchange_record_id" property="usedExchangeRecordId"/>
+        <result column="used_time" property="usedTime"/>
+        <result column="create_time" property="createTime"/>
+        <result column="update_time" property="updateTime"/>
+    </resultMap>
+
+    <select id="getById" resultMap="BaseResultMap">
+        SELECT * FROM user_seckill_coupon WHERE id = #{id}
+    </select>
+
+    <select id="getByActivityAndUser" resultMap="BaseResultMap">
+        SELECT * FROM user_seckill_coupon WHERE activity_id = #{activityId} AND user_id = #{userId}
+    </select>
+
+    <select id="listByUserId" resultMap="BaseResultMap">
+        SELECT * FROM user_seckill_coupon WHERE user_id = #{userId} ORDER BY create_time DESC
+    </select>
+
+    <select id="listUsableByUserId" resultMap="BaseResultMap">
+        SELECT *
+        FROM user_seckill_coupon
+        WHERE user_id = #{userId}
+          AND status = 0
+          AND effective_time &lt;= NOW()
+          AND expire_time &gt; NOW()
+        ORDER BY expire_time ASC
+    </select>
+
+    <insert id="insert" useGeneratedKeys="true" keyProperty="id">
+        INSERT INTO user_seckill_coupon (activity_id, user_id, status, effective_time, expire_time)
+        VALUES (#{activityId}, #{userId}, #{status}, #{effectiveTime}, #{expireTime})
+    </insert>
+
+    <update id="update">
+        UPDATE user_seckill_coupon
+        <set>
+            <if test="status != null">status = #{status},</if>
+            <if test="effectiveTime != null">effective_time = #{effectiveTime},</if>
+            <if test="expireTime != null">expire_time = #{expireTime},</if>
+            <if test="usedProductId != null">used_product_id = #{usedProductId},</if>
+            <if test="usedExchangeRecordId != null">used_exchange_record_id = #{usedExchangeRecordId},</if>
+            <if test="usedTime != null">used_time = #{usedTime},</if>
+        </set>
+        WHERE id = #{id}
+    </update>
+
+    <update id="markUsed">
+        UPDATE user_seckill_coupon
+        SET status = 1,
+            used_product_id = #{productId},
+            used_exchange_record_id = #{exchangeRecordId},
+            used_time = NOW()
+        WHERE id = #{id} AND status = 0
+    </update>
+
+    <update id="markExpired">
+        UPDATE user_seckill_coupon SET status = 2 WHERE id = #{id} AND status = 0
+    </update>
+</mapper>

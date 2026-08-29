@@ -1,0 +1,103 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.br.user.mapper.UserMapper">
+    
+    <resultMap id="BaseResultMap" type="com.br.user.entity.User">
+        <id column="id" property="id"/>
+        <result column="username" property="username"/>
+        <result column="password" property="password"/>
+        <result column="nickname" property="nickname"/>
+        <result column="phone" property="phone"/>
+        <result column="email" property="email"/>
+        <result column="avatar" property="avatar"/>
+        <result column="role" property="role"/>
+        <result column="status" property="status"/>
+        <result column="create_time" property="createTime"/>
+        <result column="update_time" property="updateTime"/>
+    </resultMap>
+    
+    <select id="getById" resultMap="BaseResultMap">
+        SELECT * FROM user WHERE id = #{id}
+    </select>
+    
+    <select id="getByUsername" resultMap="BaseResultMap">
+        SELECT * FROM user WHERE username = #{username}
+    </select>
+
+    <select id="getByIdAndPassword" resultMap="BaseResultMap">
+        SELECT * FROM user WHERE id = #{id} AND password = #{password}
+    </select>
+    
+    <select id="listAll" resultMap="BaseResultMap">
+        SELECT * FROM user
+        ORDER BY role DESC, create_time DESC, id DESC
+    </select>
+    
+    <select id="listByPage" resultMap="BaseResultMap">
+        SELECT * FROM user
+        ORDER BY role DESC, create_time DESC, id DESC
+        LIMIT #{offset}, #{limit}
+    </select>
+    
+    <select id="count" resultType="java.lang.Integer">
+        SELECT COUNT(*) FROM user
+    </select>
+    
+    <!-- 按条件搜索用户 -->
+    <select id="searchUsers" resultMap="BaseResultMap">
+        SELECT * FROM user
+        <where>
+            <if test="userId != null">
+                AND id = #{userId}
+            </if>
+            <if test="username != null and username != ''">
+                AND username LIKE CONCAT('%', #{username}, '%')
+            </if>
+        </where>
+        ORDER BY role DESC, create_time DESC, id DESC
+        LIMIT #{offset}, #{limit}
+    </select>
+    
+    <select id="countBySearch" resultType="java.lang.Integer">
+        SELECT COUNT(*) FROM user
+        <where>
+            <if test="userId != null">
+                AND id = #{userId}
+            </if>
+            <if test="username != null and username != ''">
+                AND username LIKE CONCAT('%', #{username}, '%')
+            </if>
+        </where>
+    </select>
+    
+    <insert id="insert" useGeneratedKeys="true" keyProperty="id">
+        INSERT INTO user (username, password, nickname, phone, email, avatar, role, status)
+        VALUES (#{username}, #{password}, #{nickname}, #{phone}, #{email}, #{avatar}, #{role}, #{status})
+    </insert>
+    
+    <update id="update">
+        UPDATE user
+        <set>
+            <if test="password != null">password = #{password},</if>
+            <if test="nickname != null">nickname = #{nickname},</if>
+            <if test="phone != null">phone = #{phone},</if>
+            <if test="email != null">email = #{email},</if>
+            <if test="avatar != null">avatar = #{avatar},</if>
+            <if test="role != null">role = #{role},</if>
+            <if test="status != null">status = #{status},</if>
+        </set>
+        WHERE id = #{id}
+    </update>
+    
+    <update id="resetPasswordByUsernameAndPhone">
+        UPDATE user
+        SET password = #{password}
+        WHERE username = #{username} AND phone = #{phone}
+    </update>
+
+    <delete id="deleteById">
+        DELETE FROM user WHERE id = #{id}
+    </delete>
+    
+</mapper>
+

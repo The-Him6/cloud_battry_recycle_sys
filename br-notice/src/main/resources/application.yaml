@@ -1,0 +1,8 @@
+server:
+  port: 8086
+br:
+  db:
+    database: br_notice
+# MyBatis
+mybatis:
+  type-aliases-package: com.br.notice.entity

@@ -1,0 +1,14 @@
+server:
+  port: 8082
+br:
+  db:
+    database: br_points
+# MyBatis
+mybatis:
+  type-aliases-package: com.br.points.entity
+spring:
+  cloud:
+    sentinel:
+      transport:
+        dashboard: localhost:8090
+      http-method-specify: true # 是否设置请求方式作为资源名称

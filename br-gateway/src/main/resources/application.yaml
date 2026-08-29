@@ -1,0 +1,63 @@
+server:
+  port: 8080
+spring:
+  cloud:
+    gateway:
+      routes:
+        - id: br-user
+          uri: lb://br-user
+          predicates:
+            - Path=/api/auth/**,/api/user/info,/api/user/list,/api/user/page,/api/user/avatar,/api/user/upload-avatar,/api/user/change-password,/api/user
+          filters:
+            - StripPrefix=1
+        - id: br-user-delete
+          uri: lb://br-user
+          predicates:
+            - Path=/api/user/*
+            - Method=DELETE
+          filters:
+            - StripPrefix=1
+        - id: br-recycle
+          uri: lb://br-recycle
+          predicates:
+            - Path=/api/order/**,/api/battery-type/**,/api/statistics/**
+          filters:
+            - StripPrefix=1
+        - id: br-exchange
+          uri: lb://br-exchange
+          predicates:
+            - Path=/api/exchange-product/**,/api/exchange-record/**
+          filters:
+            - StripPrefix=1
+        - id: br-seckill
+          uri: lb://br-seckill
+          predicates:
+            - Path=/api/seckill/**
+          filters:
+            - StripPrefix=1
+        - id: br-seckill-coupon
+          uri: lb://br-seckill
+          predicates:
+            - Path=/api/seckill-coupon/my,/api/seckill-coupon/usable
+          filters:
+            - StripPrefix=1
+        - id: br-notice
+          uri: lb://br-notice
+          predicates:
+            - Path=/api/notice/**
+          filters:
+            - StripPrefix=1
+# JWT
+jwt:
+  secret: battery-recycle-system-secret-key-2026
+  expiration: 10800000  # 3小时（毫秒）
+# 登录态配置
+login:
+  state-expiration: 3600000
+br:
+  auth:
+    excludePaths:
+      - /api/auth/login
+      - /api/auth/register
+      - /api/auth/forgot-password
+      - /error

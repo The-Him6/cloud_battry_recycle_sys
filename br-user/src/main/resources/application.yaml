@@ -1,0 +1,16 @@
+server:
+  port: 8081
+br:
+  db:
+    database: br_user
+# MyBatis
+mybatis:
+  type-aliases-package: com.br.user.entity
+
+# JWT
+jwt:
+  secret: battery-recycle-system-secret-key-2026
+  expiration: 10800000  # 3小时
+# 登录态
+login:
+  state-expiration: 3600000  # Redis登录态1小时（毫秒），每次请求会刷新
