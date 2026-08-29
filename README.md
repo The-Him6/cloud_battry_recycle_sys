@@ -74,4 +74,4 @@ mvn install -pl br-common,br-api -am -DskipTests
 
 ## 远程仓库
 
-[github.com/The-Him6/cloud_battry_recycle-sys](https://github.com/The-Him6/cloud_battry_recycle-sys)
+[github.com/The-Him6/cloud_battry_recycle_sys](https://github.com/The-Him6/cloud_battry_recycle_sys)
