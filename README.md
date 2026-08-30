@@ -47,6 +47,18 @@
 | Sentinel Dashboard | 可选 | 流控规则可视化配置 |
 | Seata Server | 可选 | 分布式事务协调器 |
 
+## 拆分大致步骤
+
+
+1. **梳理依赖、确定边界**：盘点单体中跨域耦合点（订单读用户、兑换调积分、秒杀调积分等），按业务域划分 7 个服务 + 2 个 jar 模块，每服务独占自己的库和表，禁止跨库 Join。
+2. **搭建公共模块 `br-common`**：抽离 `Result`、异常体系、`UserContext`/`UserInfoInterceptor`、常量、缓存、OSS 上传等公共能力，用 `AutoConfiguration.imports` 自动装配（Boot 3 不再用 `spring.factories`）。
+3. **搭建 API 契约模块 `br-api`**：定义 Feign Client + 跨服务 DTO（如 `UserClient`、`UserPointsClient`、`UserSeckillCouponClient`），业务服务之间只共享 DTO，不共享 Mapper。
+4. **逐服务拆分并跑通**：按 br-user → br-points → br-recycle → br-exchange → br-seckill → br-notice 顺序，把对应 Controller/Service/Mapper 迁入独立模块，跨库调用改为 Feign，统计并入 br-recycle，`battery_type` 归属 br-recycle。
+5. **接入网关 `br-gateway`**：统一路由（`/api/**` 分发）、JWT 鉴权 + 白名单放行，解析后以 `user-info` 请求头向下游透传用户身份；服务内去掉 `context-path: /api` 避免路径重复。
+6. **Nacos 共享配置**：把数据源、Redis、日志、swagger、OSS、Seata 等公共配置抽到 Nacos 共享配置，按服务名动态刷新；端口、`br.db.database`、JWT、Sentinel、路由等本服务特有配置留在本地。
+7. **分布式事务**：秒杀链路保持 MQ 异步 + Redis 补偿（不强一致）；仅同步强一致场景引入 Seata AT（`@GlobalTransactional` 加在入口方法），TC 与客户端版本/分组保持一致。
+8. **全链路验收**：每个服务可独立启动、走通自己接口，网关统一入口后全链路可用。
+
 ## Nacos 共享配置
 
 启动前需在 Nacos 配置中心（默认 `192.168.150.102:8850`）准备以下共享配置：
@@ -58,6 +70,16 @@
 | shared-common.yaml | 通用配置（Jackson、文件上传限制等） |
 | shared-log.yaml | 日志级别与输出路径 |
 | shared-swagger.yaml | Knife4j 接口文档配置 |
+
+## 前端地址
+
+前端项目与单体共用同一套 `frontend/` 目录（Vue3 + Vite），**不需要额外改造**：
+
+- 启动：`cd frontend && npm install && npm run dev`
+- 访问：`http://localhost:3000`
+- 代理：Vite 将 `/api` 代理到网关 `http://localhost:8080`，由网关路由到各业务服务
+
+> 说明：前后端通过 `/api` 前缀解耦，前端只认网关地址，不关心后端具体拆了几个服务。
 
 ## 快速启动
 
