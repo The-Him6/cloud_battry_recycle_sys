@@ -16,7 +16,7 @@ import java.util.Map;
 import java.util.UUID;
 
 /**
- * JWT 工具类（对标 hmall JwtTool：校验失败直接抛异常，不做返回值判断）。
+ * JWT 工具类（校验失败直接抛异常，不做返回值判断）。
  */
 @Component
 public class JwtTool {
